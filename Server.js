@@ -5,6 +5,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use(cors({
+    origin: "*"
+  }));
+
 // Hard-coded user details 
 const USER_ID = "Deepa_10";
 const EMAIL = "22bcs10272@cuchd.in";
