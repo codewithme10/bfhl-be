@@ -1,18 +1,36 @@
 const express = require("express");
-const cors = require("cors"); 
+const cors = require("cors");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
 
-app.use(cors({
-    origin: "*"
-  }));
+// Proper CORS configuration
+app.use(
+  cors({
+    origin: "*", // Allow all origins
+    methods: ["GET", "POST"], // Allowed methods
+    allowedHeaders: ["Content-Type"], // Allowed headers
+  })
+);
 
-// Hard-coded user details 
+// Manually set CORS headers for all responses
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
+
+// Handle preflight requests
+app.options("*", (req, res) => {
+  res.sendStatus(200);
+});
+
+// Hard-coded user details
 const USER_ID = "Deepa_10";
 const EMAIL = "22bcs10272@cuchd.in";
 const ROLL_NUMBER = "22BCS10272";
+
 
 // GET /bfhl => { operation_code: 1 }
 app.get("/bfhl", (req, res) => {
@@ -26,7 +44,7 @@ app.post("/bfhl", (req, res) => {
     if (!data || !Array.isArray(data)) {
       return res.status(400).json({
         is_success: false,
-        message: "Invalid input. 'data' must be an array."
+        message: "Invalid input. 'data' must be an array.",
       });
     }
 
@@ -61,12 +79,12 @@ app.post("/bfhl", (req, res) => {
       roll_number: ROLL_NUMBER,
       numbers,
       alphabets,
-      highest_alphabet
+      highest_alphabet,
     });
   } catch (error) {
     return res.status(500).json({
       is_success: false,
-      message: "Server error: " + error.toString()
+      message: "Server error: " + error.toString(),
     });
   }
 });
